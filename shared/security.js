@@ -3,12 +3,9 @@ export class SecurityManager {
         this.STORAGE_KEY = 'denwin_secure_store_v1';
         this.PIN_RATE_LIMIT_KEY = 'denwin_pin_attempts';
         this.USED_PINS_KEY = 'denwin_used_pins';
-        
-        // Obfuscated salts to prevent simple clear-text storage
         this.SALT = 'dnw_slt_992_';
     }
 
-    // --- Cookie Management (Compliance) ---
     static setCookie(name, value, days) {
         let expires = "";
         if (days) {
@@ -30,13 +27,10 @@ export class SecurityManager {
         return null;
     }
 
-    // --- Secure Local Storage (Obfuscated) ---
-    // Note: This is NOT encryption. Do not store credit cards here.
-    // It prevents casual snooping of local storage.
     setItem(key, value) {
         try {
             const stringValue = JSON.stringify(value);
-            const encoded = btoa(this.SALT + stringValue); // Base64 encoding with salt
+            const encoded = btoa(this.SALT + stringValue);
             localStorage.setItem(this.STORAGE_KEY + "_" + key, encoded);
         } catch (e) {
             console.error("Storage failed", e);
@@ -56,9 +50,6 @@ export class SecurityManager {
         }
     }
 
-    // --- PIN Management Logic ---
-    
-    // Hash a PIN using SHA-256 (Async)
     async hashPin(pin) {
         const msgBuffer = new TextEncoder().encode(pin);
         const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -67,8 +58,6 @@ export class SecurityManager {
         return hashHex;
     }
 
-    // Rate Limiter: Prevent brute forcing
-    // Returns { allowed: boolean, waitTimeSeconds: number }
     checkRateLimit() {
         const now = Date.now();
         const data = this.getItem(this.PIN_RATE_LIMIT_KEY) || { attempts: 0, lastAttempt: 0, lockUntil: 0 };
@@ -77,14 +66,12 @@ export class SecurityManager {
             return { allowed: false, waitTime: Math.ceil((data.lockUntil - now) / 1000) };
         }
 
-        // Reset if 15 minutes passed
         if (now - data.lastAttempt > 15 * 60 * 1000) {
             data.attempts = 0;
             data.lockUntil = 0;
         }
 
         if (data.attempts >= 5) {
-            // Lock for 10 minutes
             data.lockUntil = now + 10 * 60 * 1000;
             this.setItem(this.PIN_RATE_LIMIT_KEY, data);
             return { allowed: false, waitTime: 600 };
@@ -100,11 +87,6 @@ export class SecurityManager {
         this.setItem(this.PIN_RATE_LIMIT_KEY, data);
     }
 
-    // Verify a PIN (Client-side Logic)
-    // - checks rate limit
-    // - checks if pin is in valid list (hashed)
-    // - checks if pin was already used locally
-    // VALID_HASHES would normally come from a server/env, but here are hardcoded examples (e.g. for "1234")
     async verifyPin(inputPin, validHashes) {
         const limit = this.checkRateLimit();
         if (!limit.allowed) {
@@ -115,18 +97,15 @@ export class SecurityManager {
 
         const hashed = await this.hashPin(inputPin);
 
-        // 1. Is it a valid PIN at all?
         if (!validHashes.includes(hashed)) {
             return { success: false, error: "Invalid PIN." };
         }
 
-        // 2. Was it used already?
         const usedConfig = this.getItem(this.USED_PINS_KEY) || [];
         if (usedConfig.includes(hashed)) {
             return { success: false, error: "This PIN has already been used." };
         }
         
-        // 3. Mark as used
         usedConfig.push(hashed);
         this.setItem(this.USED_PINS_KEY, usedConfig);
 
