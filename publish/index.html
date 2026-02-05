@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Publish • Denwin QuickSite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/shared/styles.css">
+</head>
+
+<body class="bg-slate-50 text-slate-900">
+  <header class="sticky top-0 z-10 border-b bg-white/90 backdrop-blur">
+    <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="h-9 w-9 rounded-xl bg-slate-900"></div>
+        <div class="leading-tight">
+          <div class="font-semibold">Denwin QuickSite Builder</div>
+          <div class="text-xs text-slate-500">Publish</div>
+        </div>
+      </a>
+
+      <nav class="flex items-center gap-2">
+        <a class="text-sm px-3 py-2 rounded-xl hover:bg-slate-100" href="/app">Back to Builder</a>
+        <a class="text-sm px-3 py-2 rounded-xl hover:bg-slate-100" href="/help">Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl px-4 py-8">
+    <div class="rounded-3xl border bg-white p-7 shadow-sm">
+      <h1 class="text-2xl font-bold">Publish your website (Beginner-friendly)</h1>
+      <p class="mt-2 text-slate-600">
+        You have two options: <b>free hosting</b> (recommended) or <b>upload to your own hosting</b>.
+      </p>
+
+      <div class="mt-6 grid gap-4 md:grid-cols-3">
+        <button id="optFree" class="rounded-2xl border p-5 text-left hover:bg-slate-50">
+          <div class="font-semibold">✅ Free Hosting (Recommended)</div>
+          <div class="mt-1 text-sm text-slate-600">Drag & drop your HTML file to go live.</div>
+        </button>
+
+        <button id="optOwn" class="rounded-2xl border p-5 text-left hover:bg-slate-50">
+          <div class="font-semibold">🧑💻 I have hosting already</div>
+          <div class="mt-1 text-sm text-slate-600">Download → upload to cPanel / hosting.</div>
+        </button>
+
+        <button id="optDone" class="rounded-2xl border p-5 text-left hover:bg-slate-50">
+          <div class="font-semibold">🤝 Done-For-You</div>
+          <div class="mt-1 text-sm text-slate-600">We publish it for you via WhatsApp.</div>
+        </button>
+      </div>
+
+      <div id="panel" class="mt-6 rounded-2xl border bg-slate-50 p-6">
+        <!-- JS injects content -->
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="/publish/publish.js"></script>
+</body>
+</html>

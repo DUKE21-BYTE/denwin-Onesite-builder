@@ -1,0 +1,5 @@
+/* Small extras (Tailwind handles most) */
+html,
+body {
+  scroll-behavior: smooth;
+}
